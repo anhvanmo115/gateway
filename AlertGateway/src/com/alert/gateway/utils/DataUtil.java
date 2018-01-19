@@ -9,6 +9,7 @@
  */
 package com.alert.gateway.utils;
 
+import com.alert.gateway.message.FrameObject;
 import io.netty.channel.Channel;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.Logger;
 
 /**
@@ -30,7 +32,7 @@ private static Logger LOGGER;
     private static final ConcurrentHashMap<String, DeviceObject> mapRequestIdDevice = new ConcurrentHashMap<>(); //idDevice va TransactionId
     private static final ConcurrentHashMap<Integer,Object> currentRequest = new ConcurrentHashMap<>(); //luu RequestId
     private static final ConcurrentHashMap<String,byte[]> mapChanenelKey = new ConcurrentHashMap<>();
-    
+    private static final LinkedBlockingQueue<FrameObject> requestMessageQueue = new LinkedBlockingQueue<>( Integer.MAX_VALUE);
     public static ConcurrentHashMap<String, Channel> GetMapImeiChannelHandler() {
         return mapImeiChannelHandler;
     }
@@ -47,23 +49,12 @@ private static Logger LOGGER;
         return mapChanenelKey;
     }
     
-    //public static final ConcurrentHashMap<String, Channel> mapImeiChannelHandlerContext = new ConcurrentHashMap<>();
-//    public static final ConcurrentHashMap<String, Integer> mapDeviceChannel = new ConcurrentHashMap<>();
-
-//    public static final ConcurrentHashMap<String, Boolean> mapImeiStatus = new ConcurrentHashMap<>();
-//    public static final ConcurrentHashMap<String, InternalDeviceParamMessage> mapImeiDeviceConfig = new ConcurrentHashMap<>();
     public static final boolean isWaitClientResponse = false;
-//    public static JSONParser jsonParser = new JSONParser();
 
-//    public static final int MINIMUM_REQUEST_PACKGAGE_LENGTH
-//            = Constants.PackageInfoZTE.PACKAGE_START_MARK.length
-//            + Constants.PackageInfoZTE.LENGTH_OF_MESSAGE_TYPE
-//            + Constants.PackageInfoZTE.LENGTH_OF_DATA_LENGTH
-//            + Constants.PackageInfoZTE.LENGTH_OF_ID
-//            + Constants.PackageInfoZTE.LENGTH_OF_GPS_TIME
-//            + Constants.PackageInfoZTE.PACKAGE_END_MARK.length;
-//
-//    public static final int LENGTH_TO_DATA_LENGTH = Constants.PackageInfoZTE.PACKAGE_START_MARK.length + Constants.PackageInfoZTE.LENGTH_OF_DATA_LENGTH;
+    public static LinkedBlockingQueue<FrameObject> getRequestMessageQueue() {
+        return requestMessageQueue;
+    }
+   
     public static byte[] convertFloatTo4bytes(float data) {
         int bits = Float.floatToIntBits(data);
         byte[] bytes = new byte[4];

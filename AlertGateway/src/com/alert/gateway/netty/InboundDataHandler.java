@@ -12,6 +12,8 @@ package com.alert.gateway.netty;
 import com.alert.gateway.business.BaseBusiness;
 import com.alert.gateway.message.FrameEncodeMessageObject;
 import com.alert.gateway.message.FrameObject;
+import com.alert.gateway.utils.Constants;
+import com.alert.gateway.utils.DataUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -43,24 +45,24 @@ public class InboundDataHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        //TODO foward cho tien trinh routing
-        //hoac routing ngay tai day
+        //TODO kiem tra neu ban tin ping thi tra lai ngay
+        //neu khong thi dat vao queue de xu ly 
         FrameObject frameObject = (FrameObject) msg;
-        //b1 routing, tim ra business 
-        BaseBusiness bu = null;
-        //b2 xu ly ban tin
-        if (bu != null) {
-            bu.decode(frameObject);
-            bu.processRequest();
-            FrameEncodeMessageObject frameEncodeMessageObject = bu.encode();
-            
+        String messageType = frameObject.getMessageType();
+        if (Constants.MESSAGE_TYPE_ZTE.HEART_BEAT_TYPE.equals(messageType)) {
+            if (ctx.channel().isActive()) {
+                ctx.channel().writeAndFlush(frameObject);
+            }
+        } else {
+            //dat ban tin vao queue de xu ly
+            DataUtil.getRequestMessageQueue().put(frameObject);
         }
     }
-    
-    private void responseToClient(FrameEncodeMessageObject frameEncodeMessageObject, Channel channel){
-        if(channel.isActive()){
+
+    private void responseToClient(FrameEncodeMessageObject frameEncodeMessageObject, Channel channel) {
+        if (channel.isActive()) {
             channel.writeAndFlush(frameEncodeMessageObject);
-        }else{
+        } else {
             LOGGER.info("channel is not active");
         }
     }

@@ -7,6 +7,7 @@ package com.alert.gateway.business;
 
 import com.alert.gateway.message.FrameEncodeMessageObject;
 import com.alert.gateway.message.FrameObject;
+import com.alert.gateway.message.HeartBeatMessageObject;
 import com.alert.gateway.message.MessageObject;
 
 /**
@@ -16,9 +17,8 @@ import com.alert.gateway.message.MessageObject;
 public abstract class BaseBusiness {
 
     private MessageObject messageObject;
-    
-    public BaseBusiness() {
-        messageObject = new MessageObject();
+
+    public BaseBusiness() {        
     }
 
     /**
@@ -36,7 +36,8 @@ public abstract class BaseBusiness {
 
     /**
      * tu messageObject endcode thanh mang string de gui cho client
-     * @return FrameEncodeMessageObject 
+     *
+     * @return FrameEncodeMessageObject
      */
     public abstract FrameEncodeMessageObject encode();
 
